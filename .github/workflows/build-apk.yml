@@ -19,14 +19,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install Android SDK and build tools
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
         with:
-          api-level: 33
-          target: default
-          arch: x86_64
-          force-avd-creation: false
-          emulator-options: "-no-window -no-audio"
+          packages: 'platform-tools'
+
+      - name: Install Android platform and build tools
+        run: |
+          sdkmanager "platforms;android-33" "build-tools;33.0.0"
 
       - name: Install npm dependencies
         run: npm ci
