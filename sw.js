@@ -1,30 +1,43 @@
-const CACHE_VERSION = 'pp-automation-v1';
+const CACHE_NAME = 'pp-automation-v2';
 const ASSETS = [
-  '.',
-  'index.html',
-  'styles.css',
-  'app.js',
-  'vendor/qrcode.min.js',
-  'manifest.webmanifest',
-  'assets/icon.svg'
+  './',
+  './index.html',
+  './app.js',
+  './styles.css',
+  './manifest.webmanifest',
+  './vendor/qrcode.min.js',
+  './assets/icon.svg'
 ];
-self.addEventListener('install', event => {
+
+// Install Service Worker & Cache Aset Baru
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    }).then(() => self.skipWaiting())
   );
 });
-self.addEventListener('activate', event => {
+
+// Hapus Cache Lama Otomatis saat Update
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_VERSION).map(key => caches.delete(key))))
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
-self.addEventListener('fetch', event => {
+
+// Strategi Fetch: Coba Jaringan Dulu, jika Offline Ambil dari Cache
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-      if (!response || response.status !== 200 || response.type !== 'basic') return response;
-      const clone = response.clone();
-      caches.open(CACHE_VERSION).then(cache => cache.put(event.request, clone));
-      return response;
-    })).catch(() => caches.match('/index.html'))
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
