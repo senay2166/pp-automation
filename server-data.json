@@ -1,0 +1,122 @@
+{
+  "users": [
+    {
+      "email": "admin@demo",
+      "password": "demo123",
+      "name": "Admin Pusat",
+      "role": "admin",
+      "area": "all"
+    },
+    {
+      "email": "user@lapangan",
+      "password": "lapangan123",
+      "name": "Engineer Lapangan",
+      "role": "engineer",
+      "area": "field"
+    }
+  ],
+  "assets": [
+    {
+      "id": "AST-001",
+      "name": "Panel Utama",
+      "area": "field",
+      "location": "Site A",
+      "qr": "AST-001",
+      "status": "Aktif",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "repairs": [
+    {
+      "id": "REP-001",
+      "assetId": "AST-001",
+      "date": "2026-01-01T00:00:00.000Z",
+      "user": "Engineer Lapangan",
+      "role": "engineer",
+      "area": "field",
+      "note": "Pembersihan konektor",
+      "action": "Diperbaiki",
+      "synced": true,
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "pendingSync": [],
+  "lastSync": null,
+  "areaSettings": {
+    "all": {
+      "name": "Semua Area",
+      "color": "#6366f1"
+    },
+    "field": {
+      "name": "Lapangan",
+      "color": "#22c55e"
+    },
+    "warehouse": {
+      "name": "Gudang",
+      "color": "#f59e0b"
+    }
+  },
+  "menuConfig": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "roles": [
+        "admin",
+        "engineer"
+      ]
+    },
+    {
+      "id": "assets",
+      "label": "Asset & QR",
+      "roles": [
+        "admin",
+        "engineer"
+      ]
+    },
+    {
+      "id": "history",
+      "label": "History Perbaikan",
+      "roles": [
+        "admin",
+        "engineer"
+      ]
+    },
+    {
+      "id": "sync",
+      "label": "Sync Otomatis",
+      "roles": [
+        "admin",
+        "engineer"
+      ]
+    },
+    {
+      "id": "menu-builder",
+      "label": "Custom Menu",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "id": "user-management",
+      "label": "User Management",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "id": "area-management",
+      "label": "Area Management",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "id": "audit-log",
+      "label": "Audit Log",
+      "roles": [
+        "admin"
+      ]
+    }
+  ],
+  "auditLog": []
+}

@@ -1,6 +1,11 @@
 const STORAGE_KEY = 'ppAutomationData';
 const SESSION_KEY = 'ppAutomationCurrentUser';
 
+const LOCAL_SYNC_SERVER = 'http://localhost:3000';
+const EMULATOR_SYNC_SERVER = 'http://10.0.2.2:3000';
+const DEFAULT_SYNC_SERVER = 'https://your-sync-server.example.com'; // Change this to your deployed sync server URL for production.
+const SYNC_SERVER = getSyncServerUrl();
+
 const state = {
   currentUser: null,
   activeSection: 'dashboard',
@@ -15,6 +20,16 @@ const state = {
     auditLog: []
   }
 };
+
+function getSyncServerUrl() {
+  if (window.location.href.startsWith('capacitor://')) {
+    return EMULATOR_SYNC_SERVER;
+  }
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return LOCAL_SYNC_SERVER;
+  }
+  return DEFAULT_SYNC_SERVER;
+}
 
 function getDefaultData() {
   return {
@@ -78,6 +93,73 @@ function saveStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
 }
 
+async function fetchRemoteState() {
+  if (!navigator.onLine) return;
+  try {
+    const response = await fetch(`${SYNC_SERVER}/state`);
+    if (!response.ok) return;
+    const remoteState = await response.json();
+    mergeRemoteState(remoteState);
+  } catch (error) {
+    console.warn('Tidak bisa ambil state remote:', error);
+  }
+}
+
+async function syncPendingActions() {
+  if (!navigator.onLine) {
+    showMessage('Tidak ada koneksi. Sinkronisasi gagal.', 'danger');
+    return;
+  }
+  if (!state.data.pendingSync.length) {
+    await fetchRemoteState();
+    return;
+  }
+
+  try {
+    const syncCount = state.data.pendingSync.length;
+    const response = await fetch(`${SYNC_SERVER}/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pendingSync: state.data.pendingSync,
+        clientState: {
+          users: state.data.users,
+          assets: state.data.assets,
+          repairs: state.data.repairs,
+          menuConfig: state.data.menuConfig,
+          areaSettings: state.data.areaSettings,
+          auditLog: state.data.auditLog
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Sinkron gagal. Server tidak merespon.');
+    }
+
+    const remoteState = await response.json();
+    state.data = { ...remoteState, pendingSync: [] };
+    state.data.lastSync = remoteState.lastSync || new Date().toISOString();
+    saveStorage();
+    addAudit('sync', `Sinkronisasi pending data berhasil (${syncCount})`, { user: state.currentUser?.email, count: syncCount }, false);
+    showMessage('Semua data offline telah disinkronkan.', 'success');
+    renderApp();
+  } catch (error) {
+    console.warn('Sinkronisasi gagal:', error);
+    showMessage('Sinkronisasi gagal. Coba lagi nanti.', 'danger');
+  }
+}
+
+function mergeRemoteState(remoteState) {
+  if (!remoteState) return;
+  state.data = {
+    ...remoteState,
+    pendingSync: state.data.pendingSync || [],
+    lastSync: remoteState.lastSync || state.data.lastSync
+  };
+  saveStorage();
+}
+
 function saveSession() {
   if (state.currentUser) {
     localStorage.setItem(SESSION_KEY, state.currentUser.email);
@@ -86,15 +168,19 @@ function saveSession() {
   }
 }
 
-function addAudit(type, message, meta = {}) {
-  state.data.auditLog.unshift({
+function addAudit(type, message, meta = {}, queue = true) {
+  const auditEntry = {
     id: `${type}-${Date.now()}`,
     type,
     message,
     meta,
     timestamp: new Date().toISOString()
-  });
+  };
+  state.data.auditLog.unshift(auditEntry);
   if (state.data.auditLog.length > 250) state.data.auditLog.pop();
+  if (queue) {
+    state.data.pendingSync.push({ type: 'audit', data: auditEntry, createdAt: auditEntry.timestamp });
+  }
   saveStorage();
 }
 
@@ -470,6 +556,7 @@ function addAsset() {
   addAudit('asset', `Asset ditambahkan: ${id}`, { user: state.currentUser.email, area });
   saveStorage();
   showMessage('Asset ditambahkan. Menunggu sinkronisasi.', 'success');
+  if (navigator.onLine) ensureOnlineSync();
   renderApp();
 }
 
@@ -493,8 +580,8 @@ function addRepair() {
   };
 
   state.data.repairs.push(newRepair);
+  state.data.pendingSync.push({ type: 'repair', data: newRepair, createdAt: new Date().toISOString() });
   if (!navigator.onLine) {
-    state.data.pendingSync.push({ type: 'repair', data: newRepair, createdAt: new Date().toISOString() });
     showMessage('Riwayat perbaikan disimpan offline.', 'success');
   } else {
     showMessage('Riwayat perbaikan tersimpan dan disinkronkan.', 'success');
@@ -502,6 +589,7 @@ function addRepair() {
 
   addAudit('repair', `Riwayat perbaikan asset ${assetId} ditambahkan`, { user: state.currentUser.email });
   saveStorage();
+  if (navigator.onLine) ensureOnlineSync();
   renderApp();
 }
 
@@ -532,9 +620,12 @@ function addCustomMenu() {
     return;
   }
 
-  state.data.menuConfig.push({ id, label, roles: [role] });
+  const newMenu = { id, label, roles: [role] };
+  state.data.menuConfig.push(newMenu);
+  state.data.pendingSync.push({ type: 'menu', data: newMenu, createdAt: new Date().toISOString() });
   addAudit('menu', `Menu kustom ditambahkan: ${label}`, { user: state.currentUser.email, role });
   saveStorage();
+  if (navigator.onLine) ensureOnlineSync();
   showMessage('Menu baru ditambahkan.', 'success');
   renderApp();
 }
@@ -555,9 +646,12 @@ function addUser() {
     return;
   }
 
-  state.data.users.push({ email, name, password, role, area });
+  const newUser = { email, name, password, role, area };
+  state.data.users.push(newUser);
+  state.data.pendingSync.push({ type: 'user', data: newUser, createdAt: new Date().toISOString() });
   addAudit('user', `Pengguna baru ditambahkan: ${email}`, { user: state.currentUser.email, role });
   saveStorage();
+  if (navigator.onLine) ensureOnlineSync();
   showMessage('Pengguna baru berhasil ditambahkan.', 'success');
   renderApp();
 }
@@ -576,9 +670,12 @@ function addArea() {
     return;
   }
 
+  const newArea = { id: areaId, name: areaName, color: areaColor };
   state.data.areaSettings[areaId] = { name: areaName, color: areaColor };
+  state.data.pendingSync.push({ type: 'area', data: newArea, createdAt: new Date().toISOString() });
   addAudit('area', `Area baru ditambahkan: ${areaName}`, { user: state.currentUser.email });
   saveStorage();
+  if (navigator.onLine) ensureOnlineSync();
   showMessage('Area baru berhasil ditambahkan.', 'success');
   renderApp();
 }
@@ -605,8 +702,11 @@ function syncPendingActions() {
 }
 
 function ensureOnlineSync() {
-  if (navigator.onLine && state.data.pendingSync.length) {
+  if (!navigator.onLine) return;
+  if (state.data.pendingSync.length) {
     syncPendingActions();
+  } else {
+    fetchRemoteState();
   }
 }
 

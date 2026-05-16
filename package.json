@@ -6,7 +6,8 @@
   "scripts": {
     "copy": "mkdir -p www && cp -R index.html styles.css app.js manifest.webmanifest assets vendor www/",
     "sync": "npx cap sync android",
-    "build": "npm run copy && npx cap sync android"
+    "build": "npm run copy && npx cap sync android",
+    "start-server": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   "dependencies": {
     "@capacitor/android": "^8.3.4",
     "@capacitor/cli": "^8.3.4",
-    "@capacitor/core": "^8.3.4"
+    "@capacitor/core": "^8.3.4",
+    "express": "^4.18.4"
   }
 }

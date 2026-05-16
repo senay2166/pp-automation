@@ -41,6 +41,13 @@ Workflow `/.github/workflows/pages.yml` akan menerbitkan halaman setiap push ke 
 - File APK dapat dibangun otomatis menggunakan workflow `/.github/workflows/build-apk.yml`.
 - Setelah workflow selesai, APK akan tersedia sebagai artifact di GitHub Actions.
 
+## Sync Server
+- Untuk membuat data web dan Android sinkron, jalankan server sinkronisasi lokal dengan `npm run start-server`.
+- Aplikasi tetap bekerja offline karena data disimpan di `localStorage`.
+- Saat perangkat kembali online, data akan otomatis dikirim ke server dan disinkronkan.
+- Untuk Android emulator lokal, app akan menggunakan `http://10.0.2.2:3000`.
+- Untuk perangkat nyata atau web di HTTPS, ganti `DEFAULT_SYNC_SERVER` di `app.js` dengan URL server yang dapat diakses.
+
 ## Catatan teknis
 - Data aplikasi disimpan di `localStorage`, sehingga bisa digunakan offline.
 - Service worker di `sw.js` meng-cache file statis untuk akses cepat.
