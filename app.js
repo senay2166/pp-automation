@@ -50,7 +50,7 @@ function getDefaultData() {
       all: { name: 'Semua Area', color: '#6366f1' },
       field: { name: 'Lapangan', color: '#22c55e' },
       warehouse: { name: 'Gudang', color: '#f59e0b' }
-    ],
+    }, // <-- Sudah diperbaiki menjadi kurung kurawal tutup
     menuConfig: [
       { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'engineer'] },
       { id: 'assets', label: 'Asset & QR', roles: ['admin', 'engineer'] },
@@ -217,6 +217,7 @@ function setSection(section) {
 
 function renderApp() {
   const app = document.getElementById('app');
+  if (!app) return;
   if (!state.currentUser) {
     app.innerHTML = renderLogin();
     return;
@@ -598,6 +599,7 @@ function renderQr(assetId) {
   const asset = state.data.assets.find(a => a.id === assetId);
   if (!asset) return;
   const qrPanel = document.getElementById('qr-panel');
+  if (!qrPanel) return;
   qrPanel.classList.remove('hidden');
   qrPanel.innerHTML = `
     <div class="label-row"><h2>QR Code untuk ${asset.name}</h2></div>
@@ -605,7 +607,10 @@ function renderQr(assetId) {
     <p style="color:var(--muted);margin-top:12px;">Scan untuk melihat ID asset: <strong>${asset.id}</strong></p>
   `;
   new QRCode(document.getElementById('qr-root'), { text: asset.qr, width: 230, height: 230, colorDark: '#111827', colorLight: '#f8fafc' });
-  setTimeout(() => document.getElementById('qr-panel').scrollIntoView({ behavior: 'smooth' }), 100);
+  setTimeout(() => {
+    const el = document.getElementById('qr-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
 }
 
 function addCustomMenu() {
@@ -701,7 +706,7 @@ window.addEventListener('load', () => {
   renderApp();
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => console.warn('Service worker gagal terdaftar.'));
+    navigator.serviceWorker.register('./sw.js').catch(() => console.warn('Service worker gagal terdaftar.'));
   }
 
   window.addEventListener('online', () => {
