@@ -1,1 +1,43 @@
 # pp-automation
+
+PP Automation adalah starter web app offline-first untuk manajemen aset, history perbaikan, dan role-based UI. Aplikasi ini dirancang agar mudah dikembangkan menjadi APK Android melalui PWA wrapper seperti Capacitor atau TWA.
+
+## Fitur utama
+- Login role-based `admin` / `engineer`
+- Area management dan role assignment
+- Asset management dengan QR code untuk setiap asset
+- History perbaikan lengkap, termasuk siapa, area, dan catatan
+- Offline mode dengan service worker dan `localStorage`
+- Auto-sync saat kembali online
+- Audit log untuk login, logout, asset, perbaikan, area, dan user
+- Custom menu builder yang disimpan di browser
+- Deploy otomatis ke GitHub Pages
+
+## Login demo
+- `admin@demo` / `demo123`
+- `user@lapangan` / `lapangan123`
+
+## Struktur halaman
+- Dashboard
+- Asset & QR
+- History Perbaikan
+- Sync Otomatis
+- Custom Menu
+- User Management (admin)
+- Area Management (admin)
+- Audit Log (admin)
+
+## Cara pakai
+1. Push repository ke GitHub.
+2. Buka `index.html` secara lokal atau jalankan di GitHub Pages.
+3. Login menggunakan akun demo.
+4. Tambah asset dan riwayat. Semua data akan tetap tersimpan saat offline.
+
+## Deploy GitHub Pages
+Workflow `/.github/workflows/pages.yml` akan menerbitkan halaman setiap push ke branch `main`.
+
+## Catatan teknis
+- Data aplikasi disimpan di `localStorage` agar bisa digunakan offline.
+- Service worker di `sw.js` meng-cache file statis untuk akses cepat.
+- PWA metadata ditambahkan di `index.html` untuk pengalaman mobile lebih baik.
+- Untuk membuat APK, gunakan wrapper PWA seperti Capacitor atau Trusted Web Activity.
