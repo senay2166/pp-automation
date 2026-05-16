@@ -46,7 +46,8 @@ Workflow `/.github/workflows/pages.yml` akan menerbitkan halaman setiap push ke 
 - Aplikasi tetap bekerja offline karena data disimpan di `localStorage`.
 - Saat perangkat kembali online, data akan otomatis dikirim ke server dan disinkronkan.
 - Untuk Android emulator lokal, app akan menggunakan `http://10.0.2.2:3000`.
-- Untuk perangkat nyata atau web di HTTPS, ganti `DEFAULT_SYNC_SERVER` di `app.js` dengan URL server yang dapat diakses.
+- Untuk web lokal di browser, app akan gunakan `http://localhost:3000`.
+- Untuk perangkat nyata atau jika web dipakai lewat GitHub Pages, ganti `DEFAULT_SYNC_SERVER` di `app.js` dengan URL server yang dapat diakses dari jaringan / internet.
 
 ## Catatan teknis
 - Data aplikasi disimpan di `localStorage`, sehingga bisa digunakan offline.

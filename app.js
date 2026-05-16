@@ -3,7 +3,7 @@ const SESSION_KEY = 'ppAutomationCurrentUser';
 
 const LOCAL_SYNC_SERVER = 'http://localhost:3000';
 const EMULATOR_SYNC_SERVER = 'http://10.0.2.2:3000';
-const DEFAULT_SYNC_SERVER = 'https://your-sync-server.example.com'; // Change this to your deployed sync server URL for production.
+const DEFAULT_SYNC_SERVER = 'http://localhost:3000'; // Local default for web development. Change to your deployed sync server URL for production.
 const SYNC_SERVER = getSyncServerUrl();
 
 const state = {
@@ -22,7 +22,8 @@ const state = {
 };
 
 function getSyncServerUrl() {
-  if (window.location.href.startsWith('capacitor://')) {
+  const isCapacitorNative = window.location.protocol === 'capacitor:' || window.Capacitor?.isNative;
+  if (isCapacitorNative) {
     return EMULATOR_SYNC_SERVER;
   }
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
