@@ -3,7 +3,7 @@ const SESSION_KEY = 'ppAutomationCurrentUser';
 
 const LOCAL_SYNC_SERVER = 'http://localhost:3000';
 const EMULATOR_SYNC_SERVER = 'http://10.0.2.2:3000';
-const DEFAULT_SYNC_SERVER = 'http://localhost:3000'; // Ubah ke URL server production Anda jika sudah dideploy
+const DEFAULT_SYNC_SERVER = 'http://localhost:3000'; 
 const SYNC_SERVER = getSyncServerUrl();
 
 const state = {
@@ -50,7 +50,7 @@ function getDefaultData() {
       all: { name: 'Semua Area', color: '#6366f1' },
       field: { name: 'Lapangan', color: '#22c55e' },
       warehouse: { name: 'Gudang', color: '#f59e0b' }
-    }, // <-- Sudah diperbaiki menjadi kurung kurawal tutup
+    },
     menuConfig: [
       { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'engineer'] },
       { id: 'assets', label: 'Asset & QR', roles: ['admin', 'engineer'] },
@@ -401,7 +401,7 @@ function renderSyncPanel() {
   return `
     <div class="card">
       <div class="header-row"><h2>Monitoring Sinkronisasi</h2></div>
-      <p>Mode offline otomatis aktif. Setiap perubahan yang belum sinkron disimpan lokal dan diupload saat kembali online.</p>
+      <p>Mode offline otomatis aktif. Setiap perubahan yang belum sync disimpan lokal dan diupload saat kembali online.</p>
       <div class="grid grid-3">
         <div class="card"><p>Last Sync</p><strong>${state.data.lastSync ? new Date(state.data.lastSync).toLocaleString() : 'Belum tersinkronisasi'}</strong></div>
         <div class="card"><p>Pending</p><strong>${pending}</strong></div>
