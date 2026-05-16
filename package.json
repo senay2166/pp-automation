@@ -1,0 +1,28 @@
+{
+  "name": "pp-automation",
+  "version": "1.0.0",
+  "description": "PP Automation adalah starter web app offline-first untuk manajemen aset, history perbaikan, dan role-based UI. Aplikasi ini dirancang agar mudah dikembangkan menjadi APK Android melalui PWA wrapper seperti Capacitor atau TWA.",
+  "main": "app.js",
+  "scripts": {
+    "copy": "cp -R index.html styles.css app.js manifest.webmanifest assets vendor www/",
+    "sync": "npx cap sync android",
+    "build": "npm run copy && npx cap sync android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/senay2166/pp-automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/senay2166/pp-automation/issues"
+  },
+  "homepage": "https://github.com/senay2166/pp-automation#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4"
+  }
+}

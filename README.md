@@ -36,8 +36,13 @@ PP Automation adalah starter web app offline-first untuk manajemen aset, history
 ## Deploy GitHub Pages
 Workflow `/.github/workflows/pages.yml` akan menerbitkan halaman setiap push ke branch `main`.
 
+## Build APK
+- Aplikasi sudah disiapkan dengan Capacitor dan Android wrapper di project.
+- File APK dapat dibangun otomatis menggunakan workflow `/.github/workflows/build-apk.yml`.
+- Setelah workflow selesai, APK akan tersedia sebagai artifact di GitHub Actions.
+
 ## Catatan teknis
-- Data aplikasi disimpan di `localStorage` agar bisa digunakan offline.
+- Data aplikasi disimpan di `localStorage`, sehingga bisa digunakan offline.
 - Service worker di `sw.js` meng-cache file statis untuk akses cepat.
 - PWA metadata ditambahkan di `index.html` untuk pengalaman mobile lebih baik.
-- Untuk membuat APK, gunakan wrapper PWA seperti Capacitor atau Trusted Web Activity.
+- Untuk membuat APK secara manual, jalankan `npm run build` dan kemudian `cd android && ./gradlew assembleDebug` pada mesin dengan Android SDK.
