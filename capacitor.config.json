@@ -1,6 +1,6 @@
 {
   "appId": "com.ppautomation.app",
   "appName": "PP Automation",
-  "webDir": "www",
+  "webDir": ".",
   "bundledWebRuntime": false
 }
