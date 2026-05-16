@@ -26,9 +26,9 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
-      - name: Sync Capacitor
+      - name: Sync Capacitor Aset
         run: npx cap sync
 
       - name: Make Gradle Executable
