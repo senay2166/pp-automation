@@ -3,7 +3,7 @@ const SESSION_KEY = 'ppAutomationCurrentUser';
 
 const LOCAL_SYNC_SERVER = 'http://localhost:3000';
 const EMULATOR_SYNC_SERVER = 'http://10.0.2.2:3000';
-const DEFAULT_SYNC_SERVER = 'http://localhost:3000'; // Local default for web development. Change to your deployed sync server URL for production.
+const DEFAULT_SYNC_SERVER = 'http://localhost:3000'; // Ubah ke URL server production Anda jika sudah dideploy
 const SYNC_SERVER = getSyncServerUrl();
 
 const state = {
@@ -50,7 +50,7 @@ function getDefaultData() {
       all: { name: 'Semua Area', color: '#6366f1' },
       field: { name: 'Lapangan', color: '#22c55e' },
       warehouse: { name: 'Gudang', color: '#f59e0b' }
-    },
+    ],
     menuConfig: [
       { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'engineer'] },
       { id: 'assets', label: 'Asset & QR', roles: ['admin', 'engineer'] },
@@ -678,27 +678,6 @@ function addArea() {
   saveStorage();
   if (navigator.onLine) ensureOnlineSync();
   showMessage('Area baru berhasil ditambahkan.', 'success');
-  renderApp();
-}
-
-function syncPendingActions() {
-  if (!navigator.onLine) {
-    showMessage('Tidak ada koneksi. Sinkronisasi gagal.', 'danger');
-    return;
-  }
-  if (!state.data.pendingSync.length) {
-    showMessage('Tidak ada data untuk disinkronkan.', 'info');
-    return;
-  }
-
-  state.data.pendingSync.forEach(record => {
-    if (record.data) record.data.synced = true;
-  });
-  state.data.lastSync = new Date().toISOString();
-  addAudit('sync', 'Sinkronisasi pending data berhasil', { user: state.currentUser.email, count: state.data.pendingSync.length });
-  state.data.pendingSync = [];
-  saveStorage();
-  showMessage('Semua data offline telah disinkronkan.', 'success');
   renderApp();
 }
 
