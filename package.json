@@ -4,7 +4,7 @@
   "description": "PP Automation adalah starter web app offline-first untuk manajemen aset, history perbaikan, dan role-based UI. Aplikasi ini dirancang agar mudah dikembangkan menjadi APK Android melalui PWA wrapper seperti Capacitor atau TWA.",
   "main": "app.js",
   "scripts": {
-    "copy": "cp -R index.html styles.css app.js manifest.webmanifest assets vendor www/",
+    "copy": "mkdir -p www && cp -R index.html styles.css app.js manifest.webmanifest assets vendor www/",
     "sync": "npx cap sync android",
     "build": "npm run copy && npx cap sync android"
   },
